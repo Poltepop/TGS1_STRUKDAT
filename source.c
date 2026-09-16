@@ -15,7 +15,6 @@ void initReservasi(Reservasi reservasi[baris][kolom]){
     int i, j, k, l;
     int count = 1;
 
-
     for(i = 0; i < baris; i++){
         for(j = 0; j < kolom; j++){
             reservasi[i][j].kodeMeja = count;
@@ -51,8 +50,8 @@ void pesanMenu(Reservasi reservasi[baris][kolom], int getBaris, int getKolom){
                 printf("Masukan Menu ke-%d: ", count);
                 scanf("%s", &temp);
 
-                if(strcmp(temp, "steak") != 0 && strcmp(temp, "pasta") != 0 && strcmp(temp, "salad") != 0 && strcmp(temp, "jus") != 0){
-                    printf("[!] INVALID [!]");
+                if(strcmpi(temp, "steak") != 0 && strcmpi(temp, "pasta") != 0 && strcmpi(temp, "salad") != 0 && strcmpi(temp, "jus") != 0){
+                    printf("[!] INVALID [!]\n");
                     continue;
                 }
 
@@ -70,35 +69,30 @@ void pesanMejaResto(Reservasi reservasi[baris][kolom]){
     int i, j;
     char pilihan;
 
-    printf("Masukan Baris: ");
-    scanf("%d", &i);
+    do{
+        printf("Masukan Baris: ");
+        scanf("%d", &i);
+        if(i < 0 || i >= baris){
+            printf("[!] BARIS NEGATIVE ATAU MELEBIHI BATAS [!]\n");
+            continue;
+        }
+        break;
+    }while(true);
 
-    printf("Masukan Kolom: ");
-    scanf("%d", &j);
+    do{
+        printf("Masukan Kolom: ");
+        scanf("%d", &j);
+        if(j < 0 || j >= kolom){
+            printf("[!] KOLOM NEGATIVE ATAU MELEBIHI BATAS [!]\n");
+            continue;
+        }
+        break;
+    }while(true);
 
     if(strcmp(reservasi[i][j].idReservasi, "-") != 0){
         printf("[!] MEJA SUDAH TERISI [!]\n");
         return;
     }
-
-    do{
-        if(i < 0 || i >= baris){
-            printf("[!] BARIS NEGATIVE ATAU MELEBIHI BATAS [!]\n");
-            continue;
-        }
-
-        break;
-    }while(true);
-
-
-    do{
-        if(j < 0 || j >= kolom){
-            printf("[!] KOLOM NEGATIVE ATAU MELEBIHI BATAS [!]\n");
-            continue;
-        }
-
-        break;
-    }while(true);
 
     printf("Masukan Nama Pemesan: ");
     scanf("%s", &reservasi[i][j].namaPemesan);
@@ -123,10 +117,11 @@ void pesanMejaResto(Reservasi reservasi[baris][kolom]){
 
     if(pilihan == 'n' || pilihan == 'N'){
         printf("[!] BATAL MEMESAN MAKANAN [!]\n");
-        return;
-    }else{
+    }else if(pilihan == 'y' || pilihan == 'Y'){
         daftarMenu();
         pesanMenu(reservasi, i, j);
+    }else{
+        printf("[!] INVALID [!] \n");
     }
 
 
@@ -196,43 +191,45 @@ void updateReservasi(Reservasi reservasi[baris][kolom]){
     if(pilihan == 'n' || pilihan == 'N'){
         printf("[!] BATAL MENGINPUT DATA [!]\n");
         return;
-    }
+    }else if(pilihan == 'y' || pilihan == 'Y'){
+        printf("Masukan Nama Pemesan: ");
+        scanf("%s", &reservasi[i][j].namaPemesan);
 
+        printf("Jenis Acara: ");
+        scanf("%s", &reservasi[i][j].jenisAcara);
 
-    printf("Masukan Nama Pemesan: ");
-    scanf("%s", &reservasi[i][j].namaPemesan);
+        do{
+            printf("ID Reservasi: ");
+            scanf("%s", &reservasi[i][j].idReservasi);
+        
+            if(strlen(reservasi[i][j].idReservasi) > 4 || strlen(reservasi[i][j].idReservasi) < 4){
+                printf("[!] INVALID [!]\n");
+                continue;
+            }
 
-    printf("Jenis Acara: ");
-    scanf("%s", &reservasi[i][j].jenisAcara);
+            break;
+        }while(true);
 
-    do{
-        printf("ID Reservasi: ");
-        scanf("%s", &reservasi[i][j].idReservasi);
-    
-        if(strlen(reservasi[i][j].idReservasi) > 4 || strlen(reservasi[i][j].idReservasi) < 4){
-            printf("[!] INVALID [!]\n");
-            continue;
+        printf("Apakah ingin memesan makanan/minuman (y/n): ");
+        scanf(" %c", &pilihanMenu);
+
+        if(pilihanMenu == 'n' || pilihanMenu == 'N'){
+            printf("[!] BATAL MEMESAN MAKANAN/MINUMAN [!]\n");
+        }else if(pilihanMenu == 'y' || pilihanMenu == 'Y'){
+            daftarMenu();
+            pesanMenu(reservasi, i, j);
+        }else{
+            printf("[!] INVALID [!] \n");
         }
-
-        break;
-    }while(true);
-
-    printf("Apakah ingin memesan makanan/minuman (y/n): ");
-    scanf(" %c", &pilihanMenu);
-
-    if(pilihanMenu == 'n' || pilihanMenu == 'N'){
-        printf("[!] BATAL MEMESAN MAKANAN/MINUMAN [!]\n");
-        return;
+    }else{
+        printf("[!] INVALID [!]");
     }
-
-    daftarMenu();
-    pesanMenu(reservasi, i, j);
 
 
 }
 
 void batalkanReservasi(Reservasi reservasi[baris][kolom]){
-    int i, j;
+    int i, j, k, l;
     char pilihan;
 
     printf("Masukan Baris: ");
@@ -246,20 +243,32 @@ void batalkanReservasi(Reservasi reservasi[baris][kolom]){
         return;
     }
 
-    getDetail(reservasi);
+    printf("Reservasi Meja %d\n", reservasi[i][j].kodeMeja);
+    printf("Nama Pemesan: %s\n", reservasi[i][j].namaPemesan);
+    printf("ID Reservasi: %s\n", reservasi[i][j].idReservasi);
+    printf("Jenis Acara: %s\n", reservasi[i][j].jenisAcara);
 
-    printf("Apakah ingin mengubah data(y/n): ");
+    if(strcmp(reservasi[i][j].menuPesanan[0][0], "-") != 0){
+        for(k = 0; k < barisPesanan; k++){
+            for(l = 0; l < kolomPesanan; l++){
+                printf("[%5s]", reservasi[i][j].menuPesanan[k][l]);
+            }
+            printf("\n");
+        }
+    }
+
+    printf("Apakah anda ingin membatalkan reservasi? (y/n): ");
     scanf(" %c", &pilihan);
 
     if(pilihan == 'n' || pilihan == 'N'){
-        printf("[!] BATAL MENGINPUT DATA [!]\n");
-        return;
+        printf("[!] GAGAL MEMBATALAKN RESERVASI MEJA [!]\n");
+    }else if(pilihan == 'y' || pilihan == 'Y'){
+        strcpy(reservasi[i][j].namaPemesan, "-");
+        strcpy(reservasi[i][j].jenisAcara, "-");
+        strcpy(reservasi[i][j].idReservasi, "-");
+
+        printf("[+] Reservasi Berhasil Di Batalkan [+]\n");
+    }else{
+        printf("[!] INVALID [!]\n");
     }
-
-    strcpy(reservasi[i][j].namaPemesan, "-");
-    strcpy(reservasi[i][j].jenisAcara, "-");
-    strcpy(reservasi[i][j].idReservasi, "-");
 }
-
-
-
